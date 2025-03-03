@@ -1,8 +1,8 @@
 window.myreadercontroller = {
     data: {
-        css: '.show-vd-url-container { display: flex; gap: 8px; align-items: center; position: absolute; left: 2px; top: 2px; index: 999; } .show-vd-url { width: 36px; height: 36px; border: none; background-color: #33333322; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; border-radius: 6px; transition: background-color 0.2s; } .show-vd-url:hover { background-color: #f0f0f055; }',
+        css: '.show-vd-url-container { display: flex; gap: 3px; align-items: center; position: absolute; left: 2px; top: 2px; z-index: 999; background-color: #efefef33; padding: 3px; border-radius: 6px;} .show-vd-url { width: 24px; height: 24px; border: none; background-color: #33333322; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; border-radius: 6px; transition: background-color 0.2s; } .show-vd-url:hover { background-color: #f0f0f055; }',
     },
-    addcss: function(){
+    addcss: function () {
         let newCss = document.createElement('style');
         newCss.innerHTML = this.data.css;
         document.head.appendChild(newCss);
@@ -16,7 +16,7 @@ window.myreadercontroller = {
         this.processMenuCommands();
         this.cycleShowVideoUrl();
     },
-    cycleShowVideoUrl: function(){
+    cycleShowVideoUrl: function () {
         setInterval(() => {
             // display the remaining time
             //console.log("loop in background");
@@ -51,25 +51,25 @@ window.myreadercontroller = {
             }
         );
     },
-    extractRegexMatches: function(inputString, regexPattern) {
+    extractRegexMatches: function (inputString, regexPattern) {
         // Ensure the regex pattern has the global flag to find all matches
         const regex = new RegExp(regexPattern, 'g');
         let matches = [];
         let match;
-    
+
         // Use the exec method to find all matches
         while ((match = regex.exec(inputString)) !== null) {
             matches.push(match[1]);
         }
-    
+
         return matches;
     },
-    collectionTikTokVideos: function(){
+    collectionTikTokVideos: function () {
         let search_container = document.getElementById('main-content-general_search');
         if (search_container) {
             let vtags = document.querySelectorAll('div[data-e2e="search_top-item"]');
             if (vtags && vtags.length > 0) {
-                for (let i = 0; i<vtags.length; i++) {
+                for (let i = 0; i < vtags.length; i++) {
                     //console.log(i, vtags[i]);
                     let existedBtn = vtags[i].querySelector('div[class="show-vd-url-container"]');
                     if (!existedBtn) {
@@ -78,18 +78,18 @@ window.myreadercontroller = {
                         let container = document.createElement('div');
                         container.className = 'show-vd-url-container';
                         let copyBtn = document.createElement('button');
-                        copyBtn.className = 'show-vd-url copy-button'; 
+                        copyBtn.className = 'show-vd-url copy-button';
                         copyBtn.innerHTML = '📋';
                         copyBtn.title = 'Copy video URL';
-                        copyBtn.onclick =  () => {
+                        copyBtn.onclick = () => {
                             navigator.clipboard.writeText(a.getAttribute('href'));
                         };
                         container.appendChild(copyBtn);
                         let downloadBtn = document.createElement('button');
-                        downloadBtn.className = 'show-vd-url download-button'; 
+                        downloadBtn.className = 'show-vd-url download-button';
                         downloadBtn.innerHTML = '⬇️';
                         downloadBtn.title = 'Send video URL to downloader';
-                        downloadBtn.onclick =  () => {
+                        downloadBtn.onclick = () => {
                             (async () => {
                                 const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
                             })();
@@ -97,10 +97,10 @@ window.myreadercontroller = {
                         };
                         container.appendChild(downloadBtn);
                         let cookieBtn = document.createElement('button');
-                        cookieBtn.className = 'show-vd-url cookie-button'; 
+                        cookieBtn.className = 'show-vd-url cookie-button';
                         cookieBtn.innerHTML = '🍪';
                         cookieBtn.title = 'Update cookies to downloader';
-                        cookieBtn.onclick =  () => {
+                        cookieBtn.onclick = () => {
                             //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
                             //console.log(newBtn.getAttribute('vid'));
                             (async () => {
@@ -116,7 +116,7 @@ window.myreadercontroller = {
         } else {
             let rtags = document.querySelectorAll('[data-e2e="recommend-list-item-container"]');
             if (rtags && rtags.length > 0) {
-                for (let i = 0; i<rtags.length; i++) {
+                for (let i = 0; i < rtags.length; i++) {
                     let existedBtn = rtags[i].querySelector('div[class="show-vd-url-container"]');
                     if (!existedBtn) {
                         //let a = rtags[i].querySelector('a[href*="/video/"]');
@@ -124,24 +124,24 @@ window.myreadercontroller = {
                         let container = document.createElement('div');
                         container.className = 'show-vd-url-container';
                         let copyBtn = document.createElement('button');
-                        copyBtn.className = 'show-vd-url copy-button'; 
+                        copyBtn.className = 'show-vd-url copy-button';
                         copyBtn.innerHTML = '📋';
                         copyBtn.title = 'Copy video URL';
-                        copyBtn.onclick =  () => {
+                        copyBtn.onclick = () => {
                             //navigator.clipboard.writeText(a.getAttribute('href'));
                             let authTag = rtags[i].querySelector('[data-e2e="video-author-uniqueid"]');
                             let idTag = rtags[i].querySelector('div[id*="xgwrapper"]');
-                            let id  = myreadercontroller.extractRegexMatches(idTag.getAttribute('id'), 'xgwrapper\-\\d+\-(\\d+)');
+                            let id = myreadercontroller.extractRegexMatches(idTag.getAttribute('id'), 'xgwrapper\-\\d+\-(\\d+)');
                             navigator.clipboard.writeText('https://www.tiktok.com/@' + authTag.textContent.trim() + '/video/' + id);
                         };
                         container.appendChild(copyBtn);
                         let downloadBtn = document.createElement('button');
-                        downloadBtn.className = 'show-vd-url download-button'; 
+                        downloadBtn.className = 'show-vd-url download-button';
                         downloadBtn.innerHTML = '⬇️';
                         downloadBtn.title = 'Send video URL to downloader';
-                        downloadBtn.onclick =  () => {
+                        downloadBtn.onclick = () => {
                             let idTag = rtags[i].querySelector('div[id*="xgwrapper"]');
-                            let id  = myreadercontroller.extractRegexMatches(idTag.getAttribute('id'), 'xgwrapper\-\\d+\-(\\d+)');
+                            let id = myreadercontroller.extractRegexMatches(idTag.getAttribute('id'), 'xgwrapper\-\\d+\-(\\d+)');
                             (async () => {
                                 const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
                             })();
@@ -149,10 +149,10 @@ window.myreadercontroller = {
                         };
                         container.appendChild(downloadBtn);
                         let cookieBtn = document.createElement('button');
-                        cookieBtn.className = 'show-vd-url cookie-button'; 
+                        cookieBtn.className = 'show-vd-url cookie-button';
                         cookieBtn.innerHTML = '🍪';
                         cookieBtn.title = 'Update cookies to downloader';
-                        cookieBtn.onclick =  () => {
+                        cookieBtn.onclick = () => {
                             //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
                             //console.log(newBtn.getAttribute('vid'));
                             (async () => {
@@ -174,21 +174,21 @@ window.myreadercontroller = {
                         let container = document.createElement('div');
                         container.className = 'show-vd-url-container';
                         let copyBtn = document.createElement('button');
-                        copyBtn.className = 'show-vd-url copy-button'; 
+                        copyBtn.className = 'show-vd-url copy-button';
                         copyBtn.innerHTML = '📋';
                         copyBtn.title = 'Copy video URL';
-                        copyBtn.onclick =  () => {
+                        copyBtn.onclick = () => {
                             //navigator.clipboard.writeText(a.getAttribute('href'));
                             let url = window.location.href;
                             navigator.clipboard.writeText(url);
                         };
                         container.appendChild(copyBtn);
                         let downloadBtn = document.createElement('button');
-                        downloadBtn.className = 'show-vd-url download-button'; 
+                        downloadBtn.className = 'show-vd-url download-button';
                         downloadBtn.innerHTML = '⬇️';
                         downloadBtn.title = 'Send video URL to downloader';
-                        downloadBtn.onclick =  () => {
-                            let id  = myreadercontroller.extractRegexMatches(window.location.href, '/\@.+/video/(\\d+)');
+                        downloadBtn.onclick = () => {
+                            let id = myreadercontroller.extractRegexMatches(window.location.href, '/\@.+/video/(\\d+)');
                             (async () => {
                                 const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
                             })();
@@ -196,10 +196,10 @@ window.myreadercontroller = {
                         };
                         container.appendChild(downloadBtn);
                         let cookieBtn = document.createElement('button');
-                        cookieBtn.className = 'show-vd-url cookie-button'; 
+                        cookieBtn.className = 'show-vd-url cookie-button';
                         cookieBtn.innerHTML = '🍪';
                         cookieBtn.title = 'Update cookies to downloader';
-                        cookieBtn.onclick =  () => {
+                        cookieBtn.onclick = () => {
                             //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
                             //console.log(newBtn.getAttribute('vid'));
                             (async () => {
@@ -215,10 +215,10 @@ window.myreadercontroller = {
             }
         }
     },
-    collectVideos: function(){
+    collectVideos: function () {
         let vtags = document.querySelectorAll('[id*="waterfall_item_"]');
         if (vtags && vtags.length > 0) {
-            for (let i = 0; i<vtags.length; i++) {
+            for (let i = 0; i < vtags.length; i++) {
                 //console.log(i, vtags[i]);
                 let existedBtn = vtags[i].querySelector('div[class="show-vd-url-container"]');
                 if (!existedBtn) {
@@ -226,19 +226,19 @@ window.myreadercontroller = {
                     let container = document.createElement('div');
                     container.className = 'show-vd-url-container';
                     let copyBtn = document.createElement('button');
-                    copyBtn.className = 'show-vd-url copy-button'; 
+                    copyBtn.className = 'show-vd-url copy-button';
                     copyBtn.innerHTML = '📋';
                     copyBtn.title = 'Copy video URL';
-                    copyBtn.onclick =  () => {
+                    copyBtn.onclick = () => {
                         navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
                         //console.log(newBtn.getAttribute('vid'));
                     };
                     container.appendChild(copyBtn);
                     let downloadBtn = document.createElement('button');
-                    downloadBtn.className = 'show-vd-url download-button'; 
+                    downloadBtn.className = 'show-vd-url download-button';
                     downloadBtn.innerHTML = '⬇️';
                     downloadBtn.title = 'Send video URL to downloader';
-                    downloadBtn.onclick =  () => {
+                    downloadBtn.onclick = () => {
                         //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
                         //console.log(newBtn.getAttribute('vid'));
                         (async () => {
@@ -247,115 +247,68 @@ window.myreadercontroller = {
                         alert('Sent to download: ' + id);
                     };
                     container.appendChild(downloadBtn);
+                    let cookieBtn = document.createElement('button');
+                    cookieBtn.className = 'show-vd-url cookie-button';
+                    cookieBtn.innerHTML = '🍪';
+                    cookieBtn.title = 'Update cookies to downloader';
+                    cookieBtn.onclick = () => {
+                        //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
+                        //console.log(newBtn.getAttribute('vid'));
+                        (async () => {
+                            const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_COOKIE', cookie: document.cookie });
+                        })();
+                        alert('Updated cookie!');
+                    };
+                    container.appendChild(cookieBtn);
                     vtags[i].appendChild(container);
                 }
             }
-        } else {
-            let rtags = document.querySelectorAll('div[data-e2e*="-video"]');
+        } 
+        
+        let rtags = document.querySelectorAll('div[data-e2e$="-video"]');
             if (rtags && rtags.length > 0) {
-                let navTag = document.getElementById('douyin-header');
-                if (navTag) {
-                    let existedBtn = navTag.querySelector('div[class="show-vd-url-container"]');
+                for (let i = 0; i < rtags.length; i++) {
+                    let existedBtn = rtags[i].querySelector('div[class="show-vd-url-container"]');
                     if (!existedBtn) {
                         let container = document.createElement('div');
                         container.className = 'show-vd-url-container';
                         let copyBtn = document.createElement('button');
-                        copyBtn.className = 'show-vd-url copy-button'; 
+                        copyBtn.className = 'show-vd-url copy-button';
                         copyBtn.innerHTML = '📋';
                         copyBtn.title = 'Copy video URL';
                         copyBtn.onclick = () => {
-                            let livetag = document.querySelector('div[data-e2e="feed-live"]');
-                            if (livetag) {
-                                let liveAtag = document.querySelector('a[data-e2e="live-slider"]');
-                                if (liveAtag) {
-                                    // let navTag = document.getElementById('douyin-header');
-                                    // if (navTag) {
-                                    //     let existedBtn = navTag.querySelector('button[class="show_vd_url"]');
-                                    //     if (existedBtn) {
-                                    //         navTag.removeChild(existedBtn);
-                                    //     }
-                                    // }
-                                    navigator.clipboard.writeText('');
-                                    //console.log('remove btn');
-                                    return '';
-                                }
-                            }
-                            let cVideoTag = document.querySelector('div[data-e2e="feed-active-video"]');
-                            if (cVideoTag) {
-                                let id = cVideoTag.getAttribute('data-e2e-vid');
-                                navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
-                            } else {
-                                let cVideoTags = document.querySelectorAll('div[data-e2e="feed-video"]');
-                                if (cVideoTags && cVideoTags.length>0) {
-                                    for (let i = cVideoTags.length-1; i>=0; i--) {
-                                        if (cVideoTags[i].id == 'sliderVideo') {
-                                            let id = cVideoTags[i].getAttribute('data-e2e-vid');
-                                            navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+                            let id = rtags[i].getAttribute('data-e2e-vid');
+                            navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
                         };
                         container.appendChild(copyBtn);
                         let downloadBtn = document.createElement('button');
-                        downloadBtn.className = 'show-vd-url download-button'; 
+                        downloadBtn.className = 'show-vd-url download-button';
                         downloadBtn.innerHTML = '⬇️';
                         downloadBtn.title = 'Send video URL to downloader';
                         downloadBtn.onclick = () => {
-                            let livetag = document.querySelector('div[data-e2e="feed-live"]');
-                            if (livetag) {
-                                let liveAtag = document.querySelector('a[data-e2e="live-slider"]');
-                                if (liveAtag) {
-                                    //console.log('remove btn');
-                                    return '';
-                                }
-                            }
-                            let cVideoTag = document.querySelector('div[data-e2e="feed-active-video"]');
-                            if (cVideoTag) {
-                                let id = cVideoTag.getAttribute('data-e2e-vid');
-                                //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
-                                (async () => {
-                                    const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_DOWNLOAD', id: id });
-                                })();
-                                alert('Sent to download: ' + id);
-                            } else {
-                                let cVideoTags = document.querySelectorAll('div[data-e2e="feed-video"]');
-                                if (cVideoTags && cVideoTags.length>0) {
-                                    for (let i = cVideoTags.length-1; i>=0; i--) {
-                                        if (cVideoTags[i].id == 'sliderVideo') {
-                                            let id = cVideoTags[i].getAttribute('data-e2e-vid');
-                                            //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
-                                            (async () => {
-                                                const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_DOWNLOAD', id: id });
-                                            })();
-                                            alert('Sent to download: ' + id);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+                            let id = rtags[i].getAttribute('data-e2e-vid');
+                            (async () => {
+                                const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_DOWNLOAD', id: id });
+                            })();
+                            alert('Sent to download: ' + id);
                         };
                         container.appendChild(downloadBtn);
                         let cookieBtn = document.createElement('button');
-                        cookieBtn.className = 'show-vd-url cookie-button'; 
+                        cookieBtn.className = 'show-vd-url cookie-button';
                         cookieBtn.innerHTML = '🍪';
                         cookieBtn.title = 'Update cookies to downloader';
-                        cookieBtn.onclick =  () => {
-                            //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
-                            //console.log(newBtn.getAttribute('vid'));
+                        cookieBtn.onclick = () => {
                             (async () => {
                                 const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_COOKIE', cookie: document.cookie });
                             })();
                             alert('Updated cookie!');
                         };
                         container.appendChild(cookieBtn);
-                    
-                        navTag.appendChild(container);
+                        rtags[i].appendChild(container);
                     }
                 }
+                
             }
-        }
 
     },
 };
