@@ -96,6 +96,19 @@ window.myreadercontroller = {
                             alert('Sent to download: ' + id);
                         };
                         container.appendChild(downloadBtn);
+                        let cookieBtn = document.createElement('button');
+                        cookieBtn.className = 'show-vd-url cookie-button'; 
+                        cookieBtn.innerHTML = '🍪';
+                        cookieBtn.title = 'Update cookies to downloader';
+                        cookieBtn.onclick =  () => {
+                            //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
+                            //console.log(newBtn.getAttribute('vid'));
+                            (async () => {
+                                const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_COOKIE', cookie: document.cookie });
+                            })();
+                            alert('Updated cookie!');
+                        };
+                        container.appendChild(cookieBtn);
                         vtags[i].appendChild(container);
                     }
                 }
@@ -155,7 +168,49 @@ window.myreadercontroller = {
             } else {
                 let detail_container = document.getElementById('main-content-video_detail');
                 if (detail_container) {
-                    //
+                    let existedBtn = detail_container.querySelector('div[class="show-vd-url-container"]');
+                    if (!existedBtn) {
+                        detail_container.style.position = 'relative';
+                        let container = document.createElement('div');
+                        container.className = 'show-vd-url-container';
+                        let copyBtn = document.createElement('button');
+                        copyBtn.className = 'show-vd-url copy-button'; 
+                        copyBtn.innerHTML = '📋';
+                        copyBtn.title = 'Copy video URL';
+                        copyBtn.onclick =  () => {
+                            //navigator.clipboard.writeText(a.getAttribute('href'));
+                            let url = window.location.href;
+                            navigator.clipboard.writeText(url);
+                        };
+                        container.appendChild(copyBtn);
+                        let downloadBtn = document.createElement('button');
+                        downloadBtn.className = 'show-vd-url download-button'; 
+                        downloadBtn.innerHTML = '⬇️';
+                        downloadBtn.title = 'Send video URL to downloader';
+                        downloadBtn.onclick =  () => {
+                            let id  = myreadercontroller.extractRegexMatches(window.location.href, '/\@.+/video/(\\d+)');
+                            (async () => {
+                                const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
+                            })();
+                            alert('Sent to download: ' + id);
+                        };
+                        container.appendChild(downloadBtn);
+                        let cookieBtn = document.createElement('button');
+                        cookieBtn.className = 'show-vd-url cookie-button'; 
+                        cookieBtn.innerHTML = '🍪';
+                        cookieBtn.title = 'Update cookies to downloader';
+                        cookieBtn.onclick =  () => {
+                            //navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
+                            //console.log(newBtn.getAttribute('vid'));
+                            (async () => {
+                                const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_COOKIE', cookie: document.cookie });
+                            })();
+                            alert('Updated cookie!');
+                        };
+                        container.appendChild(cookieBtn);
+
+                        detail_container.appendChild(container);
+                    }
                 }
             }
         }
