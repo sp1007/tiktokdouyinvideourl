@@ -68,6 +68,29 @@ window.myreadercontroller = {
         this.tiktok_search_videos();
         this.tiktok_recommended_videos();
         this.tiktok_detail_video();
+        this.tiktok_flying_video();
+    },
+    tiktok_flying_video: function(){
+        let rtags = document.querySelectorAll('[data-e2e="browse-video"]');
+        if (rtags && rtags.length > 0) {
+            for (let i = 0; i < rtags.length; i++) {
+                this.addButtons(rtags[i],
+                    oncopy = () => {
+                        let id = myreadercontroller.extractRegexMatches(window.location.href, '/\@.+/video/(\\d+)');
+                        let auth = myreadercontroller.extractRegexMatches(window.location.href, '/\@(.+)/video/\\d+');
+                        navigator.clipboard.writeText('https://www.tiktok.com/@' + auth + '/video/' + id);
+                    },
+                    onDownload = () => {
+                        let id = myreadercontroller.extractRegexMatches(window.location.href, '/\@.+/video/(\\d+)');
+                        (async () => {
+                            const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
+                        })();
+                        alert('Sent to download: ' + id);
+                    },
+                    tiktok = true
+                );
+            }
+        }
     },
     tiktok_search_videos: function(){
         let search_container = document.getElementById('main-content-general_search');
