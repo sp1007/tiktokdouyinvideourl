@@ -1,0 +1,1 @@
+combine with https://github.com/JoeanAmier/TikTokDownloader , copy and run **server.py** into root folder of TikTokDownloader

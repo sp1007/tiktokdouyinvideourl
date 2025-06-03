@@ -1,7 +1,7 @@
 {
-  "name": "Douyin showing video url",
-  "version": "0.0.1",
-  "description": "Douyin showing video url",
+  "name": "Douyin Tiktok Downloader",
+  "version": "0.0.2",
+  "description": "Douyin Tiktok Downloader",
   "manifest_version": 3,
   "author": "Pham Hung Son",
   "permissions": [
@@ -20,7 +20,7 @@
   },
   "action": {
     "default_popup": "html/popup.html",
-    "default_title": "Douyin showing video url"
+    "default_title": "Douyin Tiktok Downloader"
   },
   "content_scripts": [
     {

@@ -1,16 +1,39 @@
 window.myreadercontroller = {
     data: {
-        css: '.show-vd-url-container { display: flex; gap: 3px; align-items: center; position: absolute; left: 2px; top: 2px; z-index: 999; background-color: #efefef33; padding: 3px; border-radius: 6px;} .show-vd-url { width: 24px; height: 24px; border: none; background-color: #33333322; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; border-radius: 6px; transition: background-color 0.2s; } .show-vd-url:hover { background-color: #f0f0f055; }',
+        css: '.show-vd-url-container { display: flex; gap: 3px; align-items: center; position: absolute; left: 2px; top: 2px; z-index: 999; background-color: #efefef33; padding: 3px; border-radius: 6px;} .show-vd-url { width: 24px; height: 24px; border: none; background-color: #33333322; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; border-radius: 6px; transition: background-color 0.2s; } .show-vd-url:hover { background-color: #f0f0f055; } #show-vd-notification-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px; z-index: 9999; } .show-vd-notification { background-color: #4caf50; color: white; padding: 12px 20px; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); font-family: Arial, sans-serif; animation: showvdfadeIn 0.3s ease-in-out; min-width: 220px; } @keyframes showvdfadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }',
     },
     addcss: function () {
         let newCss = document.createElement('style');
         newCss.innerHTML = this.data.css;
         document.head.appendChild(newCss);
     },
+    addNotificationContainer: function (message) {
+        let container = document.getElementById('show-vd-notification-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'show-vd-notification-container';
+            document.body.appendChild(container);
+        }
+    },
+    showNotification: function (message) {
+        let container = document.getElementById('show-vd-notification-container');
+        if (!container) {
+            this.addNotificationContainer();
+            container = document.getElementById('show-vd-notification-container');
+        }
+        let notification = document.createElement('div');
+        notification.className = 'show-vd-notification';
+        notification.textContent = message;
+        container.appendChild(notification);
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    },
     onWindowLoaded: function () {
         //console.log("myreadercontroller loaded modified");
         //myreadercontroller.loadOptionsFromStorage();
         myreadercontroller.addcss();
+        myreadercontroller.addNotificationContainer();
     },
     init: function () {
         this.processMenuCommands();
@@ -69,6 +92,32 @@ window.myreadercontroller = {
         this.tiktok_recommended_videos();
         this.tiktok_detail_video();
         this.tiktok_flying_video();
+        this.tiktok_explore_videos();
+    },
+    tiktok_explore_videos: function () {
+        let rtags = document.querySelectorAll('[data-e2e="explore-item"]');
+        if (rtags && rtags.length > 0) {
+            console.log("tiktok_explore_videos", rtags);
+            for (let i = 0; i < rtags.length; i++) {
+                rtags[i].parentElement.style.position = 'relative';
+                let a = rtags[i].querySelector('a[href*="/video/"]');
+                let id = this.extractRegexMatches(a.getAttribute('href'), '/video/(\\d+)');
+                this.addButtons(rtags[i].parentElement,
+                    oncopy = () => {
+                        navigator.clipboard.writeText(a.getAttribute('href'));
+                        myreadercontroller.showNotification('Copied ' + a.getAttribute('href'));
+                    },
+                    onDownload = () => {
+                        (async () => {
+                                const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
+                            })();
+                            //alert('Sent to download: ' + id);
+                            myreadercontroller.showNotification('Đã đưa video vào danh sách download với ID: ' + id);
+                    },
+                    tiktok = true
+                );
+            }
+        }
     },
     tiktok_flying_video: function(){
         let rtags = document.querySelectorAll('[data-e2e="browse-video"]');
@@ -79,13 +128,15 @@ window.myreadercontroller = {
                         let id = myreadercontroller.extractRegexMatches(window.location.href, '/\@.+/video/(\\d+)');
                         let auth = myreadercontroller.extractRegexMatches(window.location.href, '/\@(.+)/video/\\d+');
                         navigator.clipboard.writeText('https://www.tiktok.com/@' + auth + '/video/' + id);
+                        myreadercontroller.showNotification('Copied ' + 'https://www.tiktok.com/@' + auth + '/video/' + id);
                     },
                     onDownload = () => {
                         let id = myreadercontroller.extractRegexMatches(window.location.href, '/\@.+/video/(\\d+)');
                         (async () => {
                             const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
                         })();
-                        alert('Sent to download: ' + id);
+                        //alert('Sent to download: ' + id);
+                        myreadercontroller.showNotification('Đã đưa video vào danh sách download với ID: ' + id);
                     },
                     tiktok = true
                 );
@@ -103,12 +154,14 @@ window.myreadercontroller = {
                     this.addButtons(vtags[i],
                         oncopy = () => {
                             navigator.clipboard.writeText(a.getAttribute('href'));
+                            myreadercontroller.showNotification('Copied ' + a.getAttribute('href'));
                         },
                         onDownload = () => {
                             (async () => {
                                 const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
                             })();
-                            alert('Sent to download: ' + id);
+                            //alert('Sent to download: ' + id);
+                            myreadercontroller.showNotification('Đã đưa video vào danh sách download với ID: ' + id);
                         },
                         tiktok = true
                     );
@@ -126,6 +179,7 @@ window.myreadercontroller = {
                         let idTag = rtags[i].querySelector('div[id*="xgwrapper"]');
                         let id = myreadercontroller.extractRegexMatches(idTag.getAttribute('id'), 'xgwrapper\-\\d+\-(\\d+)');
                         navigator.clipboard.writeText('https://www.tiktok.com/@' + authTag.textContent.trim() + '/video/' + id);
+                        myreadercontroller.showNotification('Copied ' + 'https://www.tiktok.com/@' + authTag.textContent.trim() + '/video/' + id);
                     },
                     onDownload = () => {
                         let idTag = rtags[i].querySelector('div[id*="xgwrapper"]');
@@ -133,7 +187,8 @@ window.myreadercontroller = {
                         (async () => {
                             const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
                         })();
-                        alert('Sent to download: ' + id);
+                        //alert('Sent to download: ' + id);
+                        myreadercontroller.showNotification('Đã đưa video vào danh sách download với ID: ' + id);
                     },
                     tiktok = true
                 );
@@ -148,13 +203,15 @@ window.myreadercontroller = {
                 oncopy = () => {
                     let url = window.location.href;
                     navigator.clipboard.writeText(url);
+                    myreadercontroller.showNotification('Copied ' + url);
                 },
                 onDownload = () => {
                     let id = myreadercontroller.extractRegexMatches(window.location.href, '/\@.+/video/(\\d+)');
                     (async () => {
                         const res1 = await chrome.runtime.sendMessage({ cmd: 'TIKTOK_DOWNLOAD', id: id });
                     })();
-                    alert('Sent to download: ' + id);
+                    //alert('Sent to download: ' + id);
+                    myreadercontroller.showNotification('Đã đưa video vào danh sách download với ID: ' + id);
                 },
                 tiktok = true
             );
@@ -173,13 +230,15 @@ window.myreadercontroller = {
                     oncopy = () => {
                         let id = rtags[i].getAttribute('data-e2e-vid');
                         navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
+                        myreadercontroller.showNotification('Copied ' + 'https://www.douyin.com/video/' + id);
                     },
                     onDownload = () => {
                         let id = rtags[i].getAttribute('data-e2e-vid');
                         (async () => {
                             const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_DOWNLOAD', id: id });
                         })();
-                        alert('Sent to download: ' + id);
+                        //alert('Sent to download: ' + id);
+                        myreadercontroller.showNotification('Đã đưa video vào danh sách download với ID: ' + id);
                     },
                     tiktok = false
                 );
@@ -194,12 +253,14 @@ window.myreadercontroller = {
                 this.addButtons(vtags[i],
                     oncopy = () => {
                         navigator.clipboard.writeText('https://www.douyin.com/video/' + id);
+                        myreadercontroller.showNotification('Copied ' + 'https://www.douyin.com/video/' + id);
                     },
                     onDownload = () => {
                         (async () => {
                             const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_DOWNLOAD', id: id });
                         })();
-                        alert('Sent to download: ' + id);
+                        //alert('Sent to download: ' + id);
+                        myreadercontroller.showNotification('Đã đưa video vào danh sách download với ID: ' + id);
                     },
                     tiktok = false
                 );
@@ -213,13 +274,15 @@ window.myreadercontroller = {
                 this.addButtons(dtags[i],
                     oncopy = () => {
                         navigator.clipboard.writeText(window.location.href);
+                        myreadercontroller.showNotification('Copied ' + window.location.href);
                     },
                     onDownload = () => {
                         let id = myreadercontroller.extractRegexMatches(window.location.href, '/video/(\\d+)');
                         (async () => {
                             const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_DOWNLOAD', id: id });
                         })();
-                        alert('Sent to download: ' + id);
+                        //alert('Sent to download: ' + id);
+                        myreadercontroller.showNotification('Đã đưa video vào danh sách download với ID: ' + id);
                     },
                     tiktok = false
                 );
@@ -256,7 +319,8 @@ window.myreadercontroller = {
                             const res1 = await chrome.runtime.sendMessage({ cmd: 'DOUYIN_COOKIE', cookie: document.cookie });
                         }
                     })();
-                    alert('Updated cookie!');
+                    //alert('Updated cookie!');
+                    myreadercontroller.showNotification('Đã cập nhật cookie!');
                 };
                 container.appendChild(cookieBtn);
                 el.appendChild(container);
