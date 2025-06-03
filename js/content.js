@@ -295,18 +295,6 @@ window.myreadercontroller = {
             if (!existedBtn) {
                 let container = document.createElement('div');
                 container.className = 'show-vd-url-container';
-                let copyBtn = document.createElement('button');
-                copyBtn.className = 'show-vd-url copy-button';
-                copyBtn.innerHTML = '📋';
-                copyBtn.title = 'Copy video URL';
-                copyBtn.onclick = onCopy;
-                container.appendChild(copyBtn);
-                let downloadBtn = document.createElement('button');
-                downloadBtn.className = 'show-vd-url download-button';
-                downloadBtn.innerHTML = '⬇️';
-                downloadBtn.title = 'Send video URL to downloader';
-                downloadBtn.onclick = onDownload;
-                container.appendChild(downloadBtn);
                 let cookieBtn = document.createElement('button');
                 cookieBtn.className = 'show-vd-url cookie-button';
                 cookieBtn.innerHTML = '🍪';
@@ -323,6 +311,19 @@ window.myreadercontroller = {
                     myreadercontroller.showNotification('Đã cập nhật cookie!');
                 };
                 container.appendChild(cookieBtn);
+                let copyBtn = document.createElement('button');
+                copyBtn.className = 'show-vd-url copy-button';
+                copyBtn.innerHTML = '📋';
+                copyBtn.title = 'Copy video URL';
+                copyBtn.onclick = onCopy;
+                container.appendChild(copyBtn);
+                let downloadBtn = document.createElement('button');
+                downloadBtn.className = 'show-vd-url download-button';
+                downloadBtn.innerHTML = '⬇️';
+                downloadBtn.title = 'Send video URL to downloader';
+                downloadBtn.onclick = onDownload;
+                container.appendChild(downloadBtn);
+                
                 el.appendChild(container);
             }
         }
